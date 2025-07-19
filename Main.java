@@ -1,4 +1,5 @@
 import java.util.*;
+import java.io.*;
 public class Main {
 
   static List<Student> students = new ArrayList<>();
@@ -100,6 +101,48 @@ public class Main {
       }
     }
     System.out.println("Student not found.");
+  }
+
+  // CREATE THE LOAD FORM FILE METHOD 
+  public static void loadFromFile() {
+    File file = new File("students.csv");
+
+      if (!file.exists()) {
+        System.out.println("No existing student file found. Starting fresh.");
+          return;
+      }
+
+      try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+          String line;
+
+          while ((line = reader.readLine()) != null) {
+            String[] parts = line.split(",");
+            if (parts.length == 4) {
+              int id = Integer.parseInt(parts[0]);
+              String name = parts[1];
+              int age = Integer.parseInt(parts[2]);
+              String grade = parts[3];
+
+              students.add(new Student(id, name, age, grade));
+            }
+          }
+          System.out.println("Students loaded from file.");
+      } 
+      catch (IOException | NumberFormatException e) {
+          System.out.println("Error loading file: " + e.getMessage());
+      }
+  }
+
+  public static void saveToFile() {
+    try (BufferedWriter writer = new BufferedWriter(new FileWriter("students.csv"))) {
+      for (Student s : students) {
+        writer.write(s.getId() + "," + s.getName() + "," + s.getAge() + "," + s.getGrade());
+        writer.newLine();
+      }
+    } 
+    catch (IOException e) {
+      System.out.println("Error saving file: " + e.getMessage());
+    }
   }
 }
 
